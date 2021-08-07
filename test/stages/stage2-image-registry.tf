@@ -1,4 +1,4 @@
-module "gitops_pactbroker" {
+module "gitops_image_registry" {
   source = "./module"
 
   gitops_config = module.gitops.gitops_config

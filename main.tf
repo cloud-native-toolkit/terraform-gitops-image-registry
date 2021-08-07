@@ -35,6 +35,7 @@ module seal_secrets {
   source_dir    = local.tmp_dir
   dest_dir      = local.yaml_dir
   kubeseal_cert = var.kubeseal_cert
+  label         = "image-registry"
 }
 
 resource null_resource create_yaml {
