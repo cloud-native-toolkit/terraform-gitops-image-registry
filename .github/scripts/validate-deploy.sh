@@ -45,7 +45,7 @@ else
 fi
 
 echo "Printing payload/1-infrastructure/${COMPONENT_NAME}/registry-access.yaml"
-cat payload/1-infrastructure/${COMPONENT_NAME}/registry-config.yaml
+cat payload/1-infrastructure/${COMPONENT_NAME}/registry-access.yaml
 
 count=0
 until kubectl get namespace "${NAMESPACE}" 1> /dev/null 2> /dev/null || [[ $count -eq 20 ]]; do
