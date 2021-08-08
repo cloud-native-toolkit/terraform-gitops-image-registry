@@ -1,9 +1,10 @@
-name: ""
+name: gitops-image-registry
 type: terraform
-description: ""
+description: Module to populate a gitops repo with the configuration needed to access an image registry, using a config maps and secrets.
 tags:
-  - tools
   - gitops
+  - config
+  - image registry
 versions:
   - platforms:
       - kubernetes
@@ -14,17 +15,19 @@ versions:
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
             version: ">= 1.1.0"
-      - id: cluster
-        refs:
-          - source: github.com/ibm-garage-cloud/terraform-ibm-container-platform
-            version: ">= 1.7.0"
-          - source: github.com/ibm-garage-cloud/terraform-ibm-ocp-vpc
-            version: ">= 1.0.0"
-          - source: github.com/ibm-garage-cloud/terraform-k8s-ocp-cluster
-            version: ">= 2.0.0"
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
+            version: ">= 1.0.0"
+      - id: registry
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
+            version: ">= 1.0.0"
+      - id: argocd_bootstrap
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git
+            version: ">= 1.0.0"
+          - source: github.com/cloud-native-toolkit/terraform-vsi-argocd-bootstrap.git
             version: ">= 1.0.0"
     variables:
       - name: gitops_config
@@ -35,19 +38,31 @@ versions:
         moduleRef:
           id: gitops
           output: git_credentials
-      - name: cluster_type
-        moduleRef:
-          id: cluster
-          output: platform.type_code
-      - name: cluster_ingress_hostname
-        moduleRef:
-          id: cluster
-          output: platform.ingress
-      - name: tls_secret_name
-        moduleRef:
-          id: cluster
-          output: platform.tls_secret
       - name: namespace
         moduleRef:
           id: namespace
           output: name
+      - name: registry_server
+        moduleRef:
+          id: registry
+          output: registry_server
+      - name: registry_user
+        moduleRef:
+          id: registry
+          output: registry_user
+      - name: registry_password
+        moduleRef:
+          id: registry
+          output: registry_password
+      - name: registry_namespace
+        moduleRef:
+          id: registry
+          output: registry_namespace
+      - name: registry_url
+        moduleRef:
+          id: registry
+          output: registry_url
+      - name: kubeseal_cert
+        moduleRef:
+          id: argocd_bootstrap
+          output: sealed_secrets_cert
