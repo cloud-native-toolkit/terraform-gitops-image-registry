@@ -13,7 +13,8 @@ kubectl create secret docker-registry -n "${NAMESPACE}" "${NAME}" \
   --docker-server="${SERVER}" \
   --dry-run=client \
   -o yaml | \
-  kubectl label --local=true -f - --dry-run=client -o yaml docker-registry/push=true > "${OUTPUT_DIR}/${NAME}.yaml"
+kubectl label --local=true -f - --dry-run=client -o yaml \
+   image-registry/push=true > "${OUTPUT_DIR}/${NAME}.yaml"
 
 kubectl create secret generic -n "${NAMESPACE}" registry-access \
   --from-literal=REGISTRY_URL="${SERVER}" \
