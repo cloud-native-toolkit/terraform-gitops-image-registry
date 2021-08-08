@@ -67,20 +67,45 @@ variable "namespace" {
   description = "The namespace where the application should be deployed"
 }
 
-variable "cluster_ingress_hostname" {
+variable "registry_server" {
   type        = string
-  description = "Ingress hostname of the IKS cluster."
+  description = "The server/host of the image registry"
+}
+
+variable "registry_user" {
+  type        = string
+  description = "The username to access the image registry"
+}
+
+variable "registry_password" {
+  type        = string
+  description = "The password to access the image registry"
+}
+
+variable "registry_namespace" {
+  type        = string
+  description = "The namespace in the image registry"
+}
+
+variable "registry_url" {
+  type        = string
+  description = "The url to access the image registry in a browser"
+}
+
+variable "kubeseal_cert" {
+  type        = string
+  description = "The certificate/public key used to encrypt the sealed secrets"
   default     = ""
 }
 
-variable "cluster_type" {
+variable "image_url" {
   type        = string
-  description = "The cluster type (openshift or ocp3 or ocp4 or kubernetes)"
-  default     = "ocp4"
+  description = "The url of the image that will be added to console link. If not provided the image will be empty"
+  default     = ""
 }
 
-variable "tls_secret_name" {
+variable "display_name" {
   type        = string
-  description = "The name of the secret containing the tls certificate values"
+  description = "The display name that will appear in the console link. If not provided the value will default to 'Image Registry'"
   default     = ""
 }
