@@ -23,7 +23,7 @@ kubectl label --local=true -f - --dry-run=client -o yaml \
   group=cloud-native-toolkit \
   grouping=garage-cloud-native-toolkit \
   console-link.cloud-native-toolkit.dev/enabled=true | \
-kubectl annotate --local=true -f - --dry-run-client -o yaml \
+kubectl annotate --local=true -f - --dry-run=client -o yaml \
   console-link.cloud-native-toolkit.dev/imageUrl="${IMAGE_URL}" \
   console-link.cloud-native-toolkit.dev/displayName="${DISPLAY_NAME}" > "${DEST_DIR}/registry-config.yaml"
 
