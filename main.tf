@@ -1,4 +1,5 @@
 locals {
+  bin_dir = "${path.cwd}/bin"
   name      = "image-registry"
   tmp_dir   = "${path.cwd}/.tmp/${local.name}/secrets"
   yaml_dir  = "${path.cwd}/.tmp/${local.name}/yaml"
@@ -14,7 +15,19 @@ locals {
   display_name = var.display_name != "" ? var.display_name : "Image Registry"
 }
 
+resource null_resource setup_binaries {
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/setup-binaries.sh"
+
+    environment = {
+      BIN_DIR = local.bin_dir
+    }
+  }
+}
+
 resource null_resource create_secrets {
+  depends_on = [null_resource.setup_binaries]
+
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-secrets.sh '${var.namespace}' '${local.tmp_dir}'"
 
@@ -54,11 +67,11 @@ resource null_resource setup_gitops {
   depends_on = [null_resource.create_yaml]
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/setup-gitops.sh '${local.name}' '${local.yaml_dir}' '${local.name}' '${local.application_branch}' '${var.namespace}'"
+    command = "$(command -v igc || command -v ${local.bin_dir}/igc) gitops-module '${local.name}' -n '${var.namespace}' --contentDir '${local.yaml_dir}' --serverName '${var.server_name}' -l '${local.layer}'"
 
     environment = {
-      GIT_CREDENTIALS = jsonencode(var.git_credentials)
-      GITOPS_CONFIG = jsonencode(local.layer_config)
+      GIT_CREDENTIALS = yamlencode(var.git_credentials)
+      GITOPS_CONFIG   = yamlencode(var.gitops_config)
     }
   }
 }

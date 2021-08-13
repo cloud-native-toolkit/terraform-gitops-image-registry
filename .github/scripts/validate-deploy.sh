@@ -6,6 +6,7 @@ GIT_TOKEN=$(cat git_token)
 export KUBECONFIG=$(cat .kubeconfig)
 NAMESPACE=$(cat .namespace)
 BRANCH="main"
+SERVER_NAME="default"
 
 COMPONENT_NAME="image-registry"
 
@@ -17,35 +18,29 @@ cd .testrepo || exit 1
 
 find . -name "*"
 
-if [[ ! -f "argocd/1-infrastructure/active/${COMPONENT_NAME}.yaml" ]]; then
-  echo "ArgoCD config missing"
+if [[ ! -f "argocd/1-infrastructure/cluster/${SERVER_NAME}/base/${NAMESPACE}-${COMPONENT_NAME}.yaml" ]]; then
+  echo "ArgoCD config missing - argocd/1-infrastructure/cluster/${SERVER_NAME}/base/${NAMESPACE}-${COMPONENT_NAME}.yaml"
   exit 1
-else
-  echo "ArgoCD config found"
 fi
 
-echo "Printing argocd/1-infrastructure/active/${COMPONENT_NAME}.yaml"
-cat argocd/1-infrastructure/active/${COMPONENT_NAME}.yaml
+echo "Printing argocd/1-infrastructure/cluster/${SERVER_NAME}/base/${NAMESPACE}-${COMPONENT_NAME}.yaml"
+cat "argocd/1-infrastructure/cluster/${SERVER_NAME}/base/${NAMESPACE}-${COMPONENT_NAME}.yaml"
 
-if [[ ! -f "payload/1-infrastructure/${COMPONENT_NAME}/registry-config.yaml" ]]; then
-  echo "Registry config values not found"
+if [[ ! -f "payload/1-infrastructure/namespace/${NAMESPACE}/${COMPONENT_NAME}/registry-config.yaml" ]]; then
+  echo "Registry config values not found - payload/1-infrastructure/namespace/${NAMESPACE}/${COMPONENT_NAME}/registry-config.yaml"
   exit 1
-else
-  echo "Application values found"
 fi
 
-echo "Printing payload/1-infrastructure/${COMPONENT_NAME}/registry-config.yaml"
-cat payload/1-infrastructure/${COMPONENT_NAME}/registry-config.yaml
+echo "Printing payload/1-infrastructure/namespace/${NAMESPACE}/${COMPONENT_NAME}/registry-config.yaml"
+cat "payload/1-infrastructure/namespace/${NAMESPACE}/${COMPONENT_NAME}/registry-config.yaml"
 
-if [[ ! -f "payload/1-infrastructure/${COMPONENT_NAME}/registry-access.yaml" ]]; then
-  echo "Registry secret values not found"
+if [[ ! -f "payload/1-infrastructure/namespace/${NAMESPACE}/${COMPONENT_NAME}/registry-access.yaml" ]]; then
+  echo "Registry secret values not found - payload/1-infrastructure/namespace/${NAMESPACE}/${COMPONENT_NAME}/registry-access.yaml"
   exit 1
-else
-  echo "Application values found"
 fi
 
-echo "Printing payload/1-infrastructure/${COMPONENT_NAME}/registry-access.yaml"
-cat payload/1-infrastructure/${COMPONENT_NAME}/registry-access.yaml
+echo "Printing payload/1-infrastructure/namespace/${NAMESPACE}/${COMPONENT_NAME}/registry-access.yaml"
+cat "payload/1-infrastructure/namespace/${NAMESPACE}/${COMPONENT_NAME}/registry-access.yaml"
 
 count=0
 until kubectl get namespace "${NAMESPACE}" 1> /dev/null 2> /dev/null || [[ $count -eq 20 ]]; do
