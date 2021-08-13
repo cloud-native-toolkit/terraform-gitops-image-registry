@@ -70,18 +70,5 @@ if [[ $count -eq 20 ]]; then
   exit 1
 fi
 
-count=0
-until kubectl get secret "registry-access" -n "${NAMESPACE}" || [[ $count -eq 20 ]]; do
-  echo "Waiting for secret/registry-access in ${NAMESPACE}"
-  count=$((count + 1))
-  sleep 15
-done
-
-if [[ $count -eq 20 ]]; then
-  echo "Timed out waiting for secret/registry-access in ${NAMESPACE}"
-  kubectl get all,configmap,secret -n "${NAMESPACE}"
-  exit 1
-fi
-
 cd ..
 rm -rf .testrepo
