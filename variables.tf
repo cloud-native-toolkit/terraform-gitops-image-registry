@@ -109,3 +109,9 @@ variable "display_name" {
   description = "The display name that will appear in the console link. If not provided the value will default to 'Image Registry'"
   default     = ""
 }
+
+variable "server_name" {
+  type        = string
+  description = "The name of the server"
+  default     = "default"
+}

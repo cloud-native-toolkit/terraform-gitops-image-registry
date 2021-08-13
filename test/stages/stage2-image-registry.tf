@@ -10,4 +10,5 @@ module "gitops_image_registry" {
   registry_namespace = module.icr.registry_namespace
   registry_url = module.icr.registry_url
   kubeseal_cert = module.argocd-bootstrap.sealed_secrets_cert
+  server_name = module.gitops.server_name
 }
