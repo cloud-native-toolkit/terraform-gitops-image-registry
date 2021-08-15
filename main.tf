@@ -1,5 +1,5 @@
 locals {
-  bin_dir = "${path.cwd}/bin"
+  bin_dir = module.setup_clis.bin_dir
   name      = "image-registry"
   tmp_dir   = "${path.cwd}/.tmp/${local.name}/secrets"
   yaml_dir  = "${path.cwd}/.tmp/${local.name}/yaml"
@@ -15,19 +15,11 @@ locals {
   display_name = var.display_name != "" ? var.display_name : "Image Registry"
 }
 
-resource null_resource setup_binaries {
-  provisioner "local-exec" {
-    command = "${path.module}/scripts/setup-binaries.sh"
-
-    environment = {
-      BIN_DIR = local.bin_dir
-    }
-  }
+module setup_clis {
+  source = "github.com/cloud-native-toolkit/terraform-util-clis.git"
 }
 
 resource null_resource create_secrets {
-  depends_on = [null_resource.setup_binaries]
-
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-secrets.sh '${var.namespace}' '${local.tmp_dir}'"
 
@@ -67,7 +59,7 @@ resource null_resource setup_gitops {
   depends_on = [null_resource.create_yaml]
 
   provisioner "local-exec" {
-    command = "$(command -v igc || command -v ${local.bin_dir}/igc) gitops-module '${local.name}' -n '${var.namespace}' --contentDir '${local.yaml_dir}' --serverName '${var.server_name}' -l '${local.layer}'"
+    command = "${local.bin_dir}/igc gitops-module '${local.name}' -n '${var.namespace}' --contentDir '${local.yaml_dir}' --serverName '${var.server_name}' -l '${local.layer}'"
 
     environment = {
       GIT_CREDENTIALS = yamlencode(var.git_credentials)
