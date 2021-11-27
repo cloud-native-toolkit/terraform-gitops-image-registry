@@ -154,6 +154,154 @@ versions:
         description: The display name that will appear in the console link. If not provided the value will default to 'Image Registry'
         default: ""
         optional: true
+    version: v1.1.3
+  - platforms:
+      - kubernetes
+      - ocp3
+      - ocp4
+    dependencies:
+      - id: gitops
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
+            version: ">= 1.1.0"
+      - id: namespace
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
+            version: ">= 1.0.0"
+      - id: registry
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
+            version: ">= 1.0.0"
+    variables:
+      - name: gitops_config
+        moduleRef:
+          id: gitops
+          output: gitops_config
+        type: |-
+          object({
+              boostrap = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              infrastructure = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              services = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              applications = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+            })
+        description: Config information regarding the gitops repo structure
+      - name: git_credentials
+        moduleRef:
+          id: gitops
+          output: git_credentials
+        type: |-
+          list(object({
+              repo = string
+              url = string
+              username = string
+              token = string
+            }))
+        description: The credentials for the gitops repo(s)
+      - name: server_name
+        moduleRef:
+          id: gitops
+          output: server_name
+        type: string
+        description: The name of the server
+        default: default
+        optional: true
+      - name: namespace
+        moduleRef:
+          id: namespace
+          output: name
+        type: string
+        description: The namespace where the application should be deployed
+      - name: registry_server
+        moduleRef:
+          id: registry
+          output: registry_server
+        type: string
+        description: The server/host of the image registry
+      - name: registry_user
+        moduleRef:
+          id: registry
+          output: registry_user
+        type: string
+        description: The username to access the image registry
+      - name: registry_password
+        moduleRef:
+          id: registry
+          output: registry_password
+        type: string
+        description: The password to access the image registry
+      - name: registry_namespace
+        moduleRef:
+          id: registry
+          output: registry_namespace
+        type: string
+        description: The namespace in the image registry
+      - name: registry_url
+        moduleRef:
+          id: registry
+          output: registry_url
+        type: string
+        description: The url to access the image registry in a browser
+      - name: kubeseal_cert
+        moduleRef:
+          id: gitops
+          output: sealed_secrets_cert
+        type: string
+        description: The certificate/public key used to encrypt the sealed secrets
+        default: ""
+        optional: true
+      - name: image_url
+        type: string
+        description: The url of the image that will be added to console link. If not provided the image will be empty
+        default: ""
+        optional: true
+      - name: display_name
+        type: string
+        description: The display name that will appear in the console link. If not provided the value will default to 'Image Registry'
+        default: ""
+        optional: true
     version: v1.1.2
   - platforms:
       - kubernetes
