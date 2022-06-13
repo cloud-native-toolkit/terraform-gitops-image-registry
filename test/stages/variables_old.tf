@@ -1,21 +1,18 @@
 
-variable cluster_username { 
+# Resource Group Variables
+variable "resource_group_name" {
   type        = string
-  description = "The username for AWS access"
+  description = "Existing resource group where the IKS cluster will be provisioned."
 }
 
-variable "cluster_password" {
+variable "ibmcloud_api_key" {
   type        = string
-  description = "The password for AWS access"
+  description = "The api key for IBM Cloud access"
 }
 
-variable "server_url" {
+variable "region" {
   type        = string
-}
-
-variable "bootstrap_prefix" {
-  type = string
-  default = ""
+  description = "Region for VLANs defined in private_vlan_number and public_vlan_number."
 }
 
 variable "namespace" {
@@ -40,6 +37,18 @@ variable "cluster_exists" {
   default     = "true"
 }
 
+variable "name_prefix" {
+  type        = string
+  description = "Prefix name that should be used for the cluster and services. If not provided then resource_group_name will be used"
+  default     = ""
+}
+
+variable "vpc_cluster" {
+  type        = bool
+  description = "Flag indicating that this is a vpc cluster"
+  default     = false
+}
+
 variable "git_token" {
   type        = string
   description = "Git token"
@@ -55,7 +64,7 @@ variable "git_type" {
 }
 
 variable "git_org" {
-  default = "cloud-native-toolkit-test"
+  default = "seansund"
 }
 
 variable "git_repo" {
@@ -67,11 +76,4 @@ variable "gitops_namespace" {
 }
 
 variable "git_username" {
-}
-
-variable "kubeseal_namespace" {
-  default = "sealed-secrets"
-}
-
-variable "cp_entitlement_key" {
 }
