@@ -12,3 +12,14 @@ resource null_resource output_kubeconfig {
     command = "echo '${module.dev_cluster.platform.kubeconfig}' > .kubeconfig"
   }
 }
+
+resource "null_resource" "IBMcloud-login" {
+    provisioner "local-exec" {
+    command =  "ibmcloud login  --apikey '${var.ibmcloud_api_key}' -a cloud.ibm.com -r us-south"
+    environment = {
+      BIN_DIR = module.setup_clis.bin_dir      
+    }
+    }
+}
+
+  
