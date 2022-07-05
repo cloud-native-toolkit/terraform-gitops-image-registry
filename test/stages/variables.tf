@@ -76,10 +76,10 @@ variable "kubeseal_namespace" {
 variable "cp_entitlement_key" {
 }
 
-variable "resource_group_name" {
+/*variable "resource_group_name" {
   type        = string
   description = "Existing resource group where the IKS cluster will be provisioned."
-}
+}*/
 
 variable "ibmcloud_api_key" {
   type        = string
