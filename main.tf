@@ -36,7 +36,7 @@ resource null_resource create_secrets {
 module seal_secrets {
   depends_on = [null_resource.create_secrets]
 
-  source = "github.com/cloud-native-toolkit/terraform-util-seal-secrets.git"
+  source = "github.com/cloud-native-toolkit/terraform-util-seal-secrets.git?ref=v1.1.0"
 
   source_dir    = local.tmp_dir
   dest_dir      = local.yaml_dir
@@ -45,13 +45,14 @@ module seal_secrets {
 }
 
 resource null_resource create_yaml {
+  depends_on = [module.seal_secrets]
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-yaml.sh '${var.registry_url}' '${var.registry_namespace}' '${local.display_name}' '${local.yaml_dir}'"
 
     environment = {
       TMP_DIR = local.tmp_dir
       IMAGE_URL = local.image_url
-      SEALED_SECRETS = yamlencode(module.seal_secrets.sealed_secrets)
+      //SEALED_SECRETS = yamlencode(module.seal_secrets.sealed_secrets)
     }
   }
 }
