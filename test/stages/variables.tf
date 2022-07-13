@@ -90,3 +90,8 @@ variable "region" {
   type        = string
   description = "Region for VLANs defined in private_vlan_number and public_vlan_number."
 }
+
+variable "cluster_ca_cert" {
+  type        = string
+  description = "The certificate authority for the cluster"
+}
