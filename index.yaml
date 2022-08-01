@@ -1,7 +1,9 @@
 id: github.com/cloud-native-toolkit/terraform-gitops-image-registry
 name: gitops-image-registry
 type: terraform
-description: Module to populate a gitops repo with the configuration needed to access an image registry, using a config maps and secrets.
+description: >-
+  Module to populate a gitops repo with the configuration needed to access an
+  image registry, using a config maps and secrets.
 tags:
   - gitops
   - config
@@ -15,15 +17,178 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
       - id: registry
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
-            version: ">= 1.0.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
+            version: '>= 1.0.0'
+    variables:
+      - name: gitops_config
+        type: |-
+          object({
+              boostrap = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              infrastructure = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              services = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+              applications = object({
+                argocd-config = object({
+                  project = string
+                  repo = string
+                  url = string
+                  path = string
+                })
+                payload = object({
+                  repo = string
+                  url = string
+                  path = string
+                })
+              })
+            })
+        description: Config information regarding the gitops repo structure
+        moduleRef:
+          id: gitops
+          output: gitops_config
+      - name: git_credentials
+        type: |-
+          list(object({
+              repo = string
+              url = string
+              username = string
+              token = string
+            }))
+        description: The credentials for the gitops repo(s)
+        moduleRef:
+          id: gitops
+          output: git_credentials
+      - name: namespace
+        type: string
+        description: The namespace where the application should be deployed
+        moduleRef:
+          id: namespace
+          output: name
+      - name: registry_server
+        type: string
+        description: The server/host of the image registry
+        moduleRef:
+          id: registry
+          output: registry_server
+      - name: registry_user
+        type: string
+        description: The username to access the image registry
+        moduleRef:
+          id: registry
+          output: registry_user
+      - name: registry_password
+        type: string
+        description: The password to access the image registry
+        moduleRef:
+          id: registry
+          output: registry_password
+      - name: registry_namespace
+        type: string
+        description: The namespace in the image registry
+        moduleRef:
+          id: registry
+          output: registry_namespace
+      - name: registry_url
+        type: string
+        description: The url to access the image registry in a browser
+        moduleRef:
+          id: registry
+          output: registry_url
+      - name: kubeseal_cert
+        type: string
+        description: The certificate/public key used to encrypt the sealed secrets
+        default: ''
+        moduleRef:
+          id: gitops
+          output: sealed_secrets_cert
+      - name: image_url
+        type: string
+        description: >-
+          The url of the image that will be added to console link. If not
+          provided the image will be empty
+        default: ''
+      - name: display_name
+        type: string
+        description: >-
+          The display name that will appear in the console link. If not provided
+          the value will default to 'Image Registry'
+        default: ''
+      - name: server_name
+        type: string
+        description: The name of the server
+        default: default
+        moduleRef:
+          id: gitops
+          output: server_name
+    version: v1.1.4
+    outputs:
+      - name: name
+        description: The name of the module
+      - name: branch
+        description: The branch where the module config has been placed
+      - name: namespace
+        description: The namespace where the module will be deployed
+      - name: server_name
+        description: The server where the module will be deployed
+      - name: layer
+        description: The layer where the module is deployed
+      - name: type
+        description: The type of module where the module is deployed
+  - platforms:
+      - kubernetes
+      - ocp3
+      - ocp4
+    dependencies:
+      - id: gitops
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
+            version: '>= 1.1.0'
+      - id: namespace
+        refs:
+          - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
+            version: '>= 1.0.0'
+      - id: registry
+        refs:
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
+            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -142,17 +307,21 @@ versions:
           output: sealed_secrets_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
         optional: true
       - name: image_url
         type: string
-        description: The url of the image that will be added to console link. If not provided the image will be empty
-        default: ""
+        description: >-
+          The url of the image that will be added to console link. If not
+          provided the image will be empty
+        default: ''
         optional: true
       - name: display_name
         type: string
-        description: The display name that will appear in the console link. If not provided the value will default to 'Image Registry'
-        default: ""
+        description: >-
+          The display name that will appear in the console link. If not provided
+          the value will default to 'Image Registry'
+        default: ''
         optional: true
     version: v1.1.3
   - platforms:
@@ -163,15 +332,16 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
       - id: registry
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
-            version: ">= 1.0.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
+            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -290,17 +460,21 @@ versions:
           output: sealed_secrets_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
         optional: true
       - name: image_url
         type: string
-        description: The url of the image that will be added to console link. If not provided the image will be empty
-        default: ""
+        description: >-
+          The url of the image that will be added to console link. If not
+          provided the image will be empty
+        default: ''
         optional: true
       - name: display_name
         type: string
-        description: The display name that will appear in the console link. If not provided the value will default to 'Image Registry'
-        default: ""
+        description: >-
+          The display name that will appear in the console link. If not provided
+          the value will default to 'Image Registry'
+        default: ''
         optional: true
     version: v1.1.2
   - platforms:
@@ -311,21 +485,23 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
       - id: registry
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
-            version: ">= 1.0.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
+            version: '>= 1.0.0'
       - id: argocd_bootstrap
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git
-            version: ">= 1.0.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git
+            version: '>= 1.0.0'
           - source: github.com/cloud-native-toolkit/terraform-vsi-argocd-bootstrap.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -444,17 +620,21 @@ versions:
           output: sealed_secrets_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
         optional: true
       - name: image_url
         type: string
-        description: The url of the image that will be added to console link. If not provided the image will be empty
-        default: ""
+        description: >-
+          The url of the image that will be added to console link. If not
+          provided the image will be empty
+        default: ''
         optional: true
       - name: display_name
         type: string
-        description: The display name that will appear in the console link. If not provided the value will default to 'Image Registry'
-        default: ""
+        description: >-
+          The display name that will appear in the console link. If not provided
+          the value will default to 'Image Registry'
+        default: ''
         optional: true
     version: v1.1.1
   - platforms:
@@ -465,21 +645,23 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
       - id: registry
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
-            version: ">= 1.0.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
+            version: '>= 1.0.0'
       - id: argocd_bootstrap
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git
-            version: ">= 1.0.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git
+            version: '>= 1.0.0'
           - source: github.com/cloud-native-toolkit/terraform-vsi-argocd-bootstrap.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -598,17 +780,21 @@ versions:
           output: sealed_secrets_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
         optional: true
       - name: image_url
         type: string
-        description: The url of the image that will be added to console link. If not provided the image will be empty
-        default: ""
+        description: >-
+          The url of the image that will be added to console link. If not
+          provided the image will be empty
+        default: ''
         optional: true
       - name: display_name
         type: string
-        description: The display name that will appear in the console link. If not provided the value will default to 'Image Registry'
-        default: ""
+        description: >-
+          The display name that will appear in the console link. If not provided
+          the value will default to 'Image Registry'
+        default: ''
         optional: true
     version: v1.1.0
   - platforms:
@@ -619,21 +805,23 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
       - id: registry
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
-            version: ">= 1.0.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
+            version: '>= 1.0.0'
       - id: argocd_bootstrap
         refs:
-          - source: github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git
-            version: ">= 1.0.0"
+          - source: >-
+              github.com/cloud-native-toolkit/terraform-tools-argocd-bootstrap.git
+            version: '>= 1.0.0'
           - source: github.com/cloud-native-toolkit/terraform-vsi-argocd-bootstrap.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -744,17 +932,21 @@ versions:
           output: sealed_secrets_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
         optional: true
       - name: image_url
         type: string
-        description: The url of the image that will be added to console link. If not provided the image will be empty
-        default: ""
+        description: >-
+          The url of the image that will be added to console link. If not
+          provided the image will be empty
+        default: ''
         optional: true
       - name: display_name
         type: string
-        description: The display name that will appear in the console link. If not provided the value will default to 'Image Registry'
-        default: ""
+        description: >-
+          The display name that will appear in the console link. If not provided
+          the value will default to 'Image Registry'
+        default: ''
         optional: true
     version: v1.0.1
   - platforms:
@@ -765,19 +957,19 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: cluster
         refs:
           - source: github.com/ibm-garage-cloud/terraform-ibm-container-platform
-            version: ">= 1.7.0"
+            version: '>= 1.7.0'
           - source: github.com/ibm-garage-cloud/terraform-ibm-ocp-vpc
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
           - source: github.com/ibm-garage-cloud/terraform-k8s-ocp-cluster
-            version: ">= 2.0.0"
+            version: '>= 2.0.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -882,17 +1074,21 @@ versions:
       - name: kubeseal_cert
         type: string
         description: The certificate/public key used to encrypt the sealed secrets
-        default: ""
+        default: ''
         optional: true
       - name: image_url
         type: string
-        description: The url of the image that will be added to console link. If not provided the image will be empty
-        default: ""
+        description: >-
+          The url of the image that will be added to console link. If not
+          provided the image will be empty
+        default: ''
         optional: true
       - name: display_name
         type: string
-        description: The display name that will appear in the console link. If not provided the value will default to 'Image Registry'
-        default: ""
+        description: >-
+          The display name that will appear in the console link. If not provided
+          the value will default to 'Image Registry'
+        default: ''
         optional: true
     version: v1.0.0
   - platforms:
@@ -903,19 +1099,19 @@ versions:
       - id: gitops
         refs:
           - source: github.com/cloud-native-toolkit/terraform-tools-gitops.git
-            version: ">= 1.1.0"
+            version: '>= 1.1.0'
       - id: cluster
         refs:
           - source: github.com/ibm-garage-cloud/terraform-ibm-container-platform
-            version: ">= 1.7.0"
+            version: '>= 1.7.0'
           - source: github.com/ibm-garage-cloud/terraform-ibm-ocp-vpc
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
           - source: github.com/ibm-garage-cloud/terraform-k8s-ocp-cluster
-            version: ">= 2.0.0"
+            version: '>= 2.0.0'
       - id: namespace
         refs:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
-            version: ">= 1.0.0"
+            version: '>= 1.0.0'
     variables:
       - name: gitops_config
         moduleRef:
@@ -998,7 +1194,7 @@ versions:
           output: platform.ingress
         type: string
         description: Ingress hostname of the IKS cluster.
-        default: ""
+        default: ''
         optional: true
       - name: tls_secret_name
         moduleRef:
@@ -1006,7 +1202,7 @@ versions:
           output: platform.tls_secret
         type: string
         description: The name of the secret containing the tls certificate values
-        default: ""
+        default: ''
         optional: true
       - name: namespace
         moduleRef:
