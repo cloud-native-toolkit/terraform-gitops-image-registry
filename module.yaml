@@ -20,6 +20,7 @@ versions:
           - source: github.com/cloud-native-toolkit/terraform-gitops-namespace.git
             version: ">= 1.0.0"
       - id: registry
+        optional: true
         refs:
           - source: github.com/cloud-native-toolkit/terraform-ibm-container-registry.git
             version: ">= 1.0.0"
