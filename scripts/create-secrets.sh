@@ -24,5 +24,5 @@ kubectl create secret generic -n "${NAMESPACE}" registry-access \
   --dry-run=client \
   -o yaml | \
 kubectl label --local=true -f - --dry-run=client -o yaml \
-  group=cloud-native-toolkit \
+  group=catalyst-tools \
   grouping=garage-cloud-native-toolkit > "${OUTPUT_DIR}/registry-access.yaml"
